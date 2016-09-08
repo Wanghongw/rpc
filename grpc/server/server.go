@@ -1,26 +1,32 @@
-package server
+package main
 
 import (
-	"github.com/golang/protobuf/protoc-gen-go/grpc"
-	"log"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 	"net"
+	gr "rpc/gorpc"
+	"rpc/logger"
 )
 
 const (
-	port = "41005"
+	port = "8088"
 )
 
-type Data struct{}
+type ServerImpl struct{}
+
+func (this *ServerImpl) SayHello(ctx context.Context, in *gr.HelloRequest) (*gr.HelloReply, error) {
+	return &gr.HelloReply{Message: "你好: " + in.Name}, nil
+}
 
 func main() {
+	logger.Init()
 	//起服务
 	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logger.ErrorStd("%v", err)
 	}
+	logger.DebugStd("grpc server in: %s", port)
 	s := grpc.NewServer()
-	inf.RegisterDataServer(s, &Data{})
+	gr.RegisterGreeterServer(s, &ServerImpl{})
 	s.Serve(lis)
-
-	log.Println("grpc server in: %s", port)
 }
