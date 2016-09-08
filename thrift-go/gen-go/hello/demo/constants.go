@@ -14,12 +14,5 @@ var _ = thrift.ZERO
 var _ = fmt.Printf
 var _ = bytes.Equal
 
-var MAPCONSTANT map[string]string
-
 func init() {
-	MAPCONSTANT = map[string]string{
-		"hello":     "world",
-		"goodnight": "moon",
-	}
-
 }

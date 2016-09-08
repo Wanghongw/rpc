@@ -7,11 +7,11 @@ import (
 	"flag"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
+	"hello/demo"
 	"math"
 	"net"
 	"net/url"
 	"os"
-	"rpc/thrift-go/gen-go/batu/demo"
 	"strconv"
 	"strings"
 )
@@ -20,8 +20,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "   CallBack(i64 callTime, string name,  paramMap)")
-	fmt.Fprintln(os.Stderr, "  void put(Article newArticle)")
+	fmt.Fprintln(os.Stderr, "  HelloReply SayHello(HelloRequest helloReq)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -109,70 +108,36 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := demo.NewBatuThriftClientFactory(trans, protocolFactory)
+	client := demo.NewHelloThriftClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "CallBack":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "CallBack requires 3 args")
+	case "SayHello":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "SayHello requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err9 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		arg4 := flag.Arg(1)
+		mbTrans5 := thrift.NewTMemoryBufferLen(len(arg4))
+		defer mbTrans5.Close()
+		_, err6 := mbTrans5.WriteString(arg4)
+		if err6 != nil {
+			Usage()
+			return
+		}
+		factory7 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt8 := factory7.GetProtocol(mbTrans5)
+		argvalue0 := demo.NewHelloRequest()
+		err9 := argvalue0.Read(jsProt8)
 		if err9 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		arg11 := flag.Arg(3)
-		mbTrans12 := thrift.NewTMemoryBufferLen(len(arg11))
-		defer mbTrans12.Close()
-		_, err13 := mbTrans12.WriteString(arg11)
-		if err13 != nil {
-			Usage()
-			return
-		}
-		factory14 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt15 := factory14.GetProtocol(mbTrans12)
-		containerStruct2 := demo.NewBatuThriftCallBackArgs()
-		err16 := containerStruct2.ReadField3(jsProt15)
-		if err16 != nil {
-			Usage()
-			return
-		}
-		argvalue2 := containerStruct2.ParamMap
-		value2 := argvalue2
-		fmt.Print(client.CallBack(value0, value1, value2))
-		fmt.Print("\n")
-		break
-	case "put":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "Put requires 1 args")
-			flag.Usage()
-		}
-		arg17 := flag.Arg(1)
-		mbTrans18 := thrift.NewTMemoryBufferLen(len(arg17))
-		defer mbTrans18.Close()
-		_, err19 := mbTrans18.WriteString(arg17)
-		if err19 != nil {
-			Usage()
-			return
-		}
-		factory20 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt21 := factory20.GetProtocol(mbTrans18)
-		argvalue0 := demo.NewArticle()
-		err22 := argvalue0.Read(jsProt21)
-		if err22 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		fmt.Print(client.Put(value0))
+		fmt.Print(client.SayHello(value0))
 		fmt.Print("\n")
 		break
 	case "":
