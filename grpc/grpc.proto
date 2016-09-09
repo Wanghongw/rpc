@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package gorpc;
+package grpc;
 
 // The greeting service definition.
 service Greeter {

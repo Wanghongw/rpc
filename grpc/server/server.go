@@ -4,7 +4,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"net"
-	gr "rpc/gorpc"
+	gr "rpc/grpc"
 	"rpc/logger"
 )
 

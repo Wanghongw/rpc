@@ -3,7 +3,7 @@ package main
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	gr "rpc/gorpc"
+	gr "rpc/grpc"
 	"rpc/logger"
 	"time"
 )
